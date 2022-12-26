@@ -23,9 +23,33 @@ const client = MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopol
 
     let db = client.db(dbName)
 
-    db.collection('users').insertOne({task: 'Clean the house', completed: false}).then((result)=>{
+    db.collection('tasks').insertOne({task: 'Clean the house', completed: false}).then((result)=>{
         console.log(result);
     }).catch(error =>{
+        throw error;
+    })
+
+    db.collection('tasks').insertMany([{task: 'Clean the car', completed: true}, {task: 'Clean the office', completed: true}]).then((result)=>{
+        console.log(result);
+    }).catch(error =>{
+        throw error;
+    })
+
+    db.collection('tasks').findOne({completed: false}).then(result =>{
+        console.log(result);
+    }).catch(error => {
+        throw error;
+    })
+
+    db.collection('tasks').find({completed: true}).toArray().then(result =>{
+        console.log(result);
+    }).catch(error => {
+        throw error;
+    })
+
+    db.collection('tasks').deleteOne({task: 'Clean the house', completed: false}).then(result =>{
+        console.log(result);
+    }).catch(error => {
         throw error;
     })
 

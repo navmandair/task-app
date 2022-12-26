@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "Nav Mandair",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "mongodb": "^4.13.0"
+  }
 }

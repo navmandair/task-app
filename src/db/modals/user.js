@@ -24,7 +24,7 @@ const User = mongoose.model('User', {
         trim: true,
         validate(value){
             if(value && value.toLowerCase().includes('password')){
-                throw new Error('Invalid password !')
+                throw new Error('Not secure password !')
             }
         }
     },

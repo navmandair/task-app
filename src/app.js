@@ -115,22 +115,67 @@ app.delete('/users/:id', async (req, res) => {
         let user = await User.findById(req.params.id)
         if (!user) {
             res.status(404).send({ message: 'no user found!' })
-            return
-        }
-        let result = await User.findByIdAndDelete(req.params.id)
-        if (!result) {
-            res.status(404).send({ message: 'cannot delete user!' })
-            return
-        }
-        else {
-            res.send({id: req.params.id})
-            return
+        } else {
+            let result = await User.findByIdAndDelete(req.params.id)
+            if (!result) {
+                res.status(404).send({ message: 'cannot delete user!' })
+            }
+            else {
+                res.send({ id: req.params.id })
+            }
         }
     }catch(error){
         res.status(500).send({error: error.message});
-        return
+
     }
+    return
 });
+
+app.patch('/users/:id', async(req, res)=>{
+    const allowedUpdates = ['name', 'password']
+    const isValidUpdate = Object.keys(req.body).every((update)=>{
+        return allowedUpdates.includes(update)
+    })
+    if(!isValidUpdate){
+        res.status(400).send({error : 'Contains Invalid update key'})
+    } else{
+
+    try{
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        if(!user){
+            res.status(404).send({error: 'User not found!'});
+        }else{
+            res.send(user)
+        }
+    }catch(error){
+        res.status(500).send({error: error.message})
+    }
+}
+    return
+})
+
+app.patch('/tasks/:id', async(req, res)=>{
+    const notAllowedUpdates = ['user_id', '_id', 'id']
+    const isValidUpdate = Object.keys(req.body).every((update)=>{
+        return !notAllowedUpdates.includes(update)
+    })
+    if(!isValidUpdate){
+        res.status(400).send({error : 'Contains Invalid update key'})
+    }
+    else{
+        try{
+            const user = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+            if(!user){
+                res.status(404).send();
+            }else{
+                res.send(user)
+            }
+        }catch(error){
+            res.status(500).send({error: error.message})
+        }
+    }
+    return
+})
 
 
 db.init().then(()=> {startServer(port)}).catch((error)=> { throw error;});

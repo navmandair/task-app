@@ -7,7 +7,6 @@ if (result.error) {
     throw result.error
 }
 
-
 // You will find some handlers done in diffrent way, 
 // that is intentional to display implementations diffrent ways to for same end goal
 const usersRouter = require('./routers/users');

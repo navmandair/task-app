@@ -58,20 +58,25 @@ router.delete('/tasks/:id', (req, res) => {
 });
 
 router.patch('/tasks/:id', async (req, res) => {
-    const notAllowedUpdates = ['user_id', '_id', 'id']
+    const allowedUpdates = ['description', 'completed']
     const isValidUpdate = Object.keys(req.body).every((update) => {
-        return !notAllowedUpdates.includes(update)
+        return allowedUpdates.includes(update)
     })
     if (!isValidUpdate) {
         res.status(400).send({ error: 'Contains Invalid update key' })
     }
     else {
         try {
-            const user = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-            if (!user) {
+            const task = await Task.findById(req.params.id)
+
+            if (!task) {
                 res.status(404).send();
             } else {
-                res.send(user)
+                allowedUpdates.forEach((key)=>{
+                    task[key] = req.body[key]
+                })
+                await task.save()
+                res.send(task)
             }
         } catch (error) {
             res.status(500).send({ error: error.message })

@@ -28,7 +28,7 @@ router.get('/users/:id', (req, res) => {
 });
 
 
-router.post('/users', (req, res) => {
+router.post('/users', async (req, res) => {
     //console.log(req.body);
     let user = new User(req.body)
     user.save().then((result) => {
@@ -70,10 +70,15 @@ router.patch('/users/:id', async (req, res) => {
         res.status(400).send({ error: 'Contains Invalid update key' })
     } else {
         try {
-            const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+            const user = await User.findById(req.params.id)
+            
             if (!user) {
                 res.status(404).send({ error: 'User not found!' });
             } else {
+                allowedUpdates.forEach((key)=>{
+                    user[key] = req.body[key]
+                })
+                await user.save()
                 res.send(user)
             }
         } catch (error) {

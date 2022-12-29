@@ -32,10 +32,22 @@ router.post('/users', async (req, res) => {
     //console.log(req.body);
     let user = new User(req.body)
     user.save().then((result) => {
-        res.send(result);
+        return result.generateAuthToken()
+    }).then((token) => {
+        res.status(201).send({user, token});
     }).catch((error) => {
         res.status(400).send({ message: error.message });
     });
+});
+
+router.post('/users/login', async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        const token = await user.generateAuthToken()
+        res.send({user, token})
+    } catch (error) {
+        res.status(400).send({error: error.message})
+    }
 });
 
 router.delete('/users/:id', async (req, res) => {

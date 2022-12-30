@@ -65,6 +65,16 @@ router.post('/users/logout', async (req, res) => {
     }
 });
 
+router.post('/users/logoutAll', async (req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save();
+        res.send({message: 'logged out all sessions'})
+    } catch (error) {
+        res.status(400).send({error: error.message})
+    }
+});
+
 router.delete('/users/:id', async (req, res) => {
     //console.log(req.params)
     try {

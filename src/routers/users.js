@@ -11,6 +11,9 @@ router.get('/users', (req, res) => {
     });
 });
 
+router.get('/users/me', (req, res) => {
+    res.send(req.user)
+});
 
 router.get('/users/:id', (req, res) => {
     //console.log(req.params)
@@ -45,6 +48,18 @@ router.post('/users/login', async (req, res) => {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
         res.send({user, token})
+    } catch (error) {
+        res.status(400).send({error: error.message})
+    }
+});
+
+router.post('/users/logout', async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token !== req.token
+        })
+        await req.user.save();
+        res.send({message: 'logged out'})
     } catch (error) {
         res.status(400).send({error: error.message})
     }

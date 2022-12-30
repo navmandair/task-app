@@ -3,7 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 
-const jwtAuthTokenSignKey = 'NodeJSCourse'
+const jwtAuthTokenSignKey = process.env.JWT_TOKEN_KEY || 'NodeJSCourse'
 
 const userSchema = new mongoose.Schema({
     name: {

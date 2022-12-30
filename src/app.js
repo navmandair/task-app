@@ -19,7 +19,7 @@ const auth = require('./middleware/auth');
 app.use((req, res, next) => {
     if(maintenanceMode === true){
         res.status(503).send({message: 'Site Under Maintenance'})
-    }else if(req.path === '/users/login'){
+    }else if(req.path === '/users/login' || req.method === 'POST' && req.path === '/users'){
         next()
     }else {
         auth(req, res, next)
@@ -34,7 +34,7 @@ const port = process.env.PORT || 3000;
 const startServer = (PORT) => { app.listen(PORT, () => { console.log(`Express server started on Port ${PORT}`) }) };
 
 app.get('', (req, res) => {
-    res.send('Connected to the server');
+    res.send({message: 'Connected to the server'});
 });
 
 

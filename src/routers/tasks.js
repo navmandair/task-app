@@ -1,7 +1,8 @@
 const express = require('express');
 const Task = require('../db/modals/task');
+const User = require('../db/modals/user');
 const router = new express.Router();
-
+const auth = require('../middleware/auth')
 
 router.get('/tasks', (req, res) => {
     //console.log(req.body)
@@ -10,6 +11,15 @@ router.get('/tasks', (req, res) => {
     }).catch((error) => {
         res.status(500).send({ message: error.message });
     });
+});
+
+router.get('/tasks/me', auth, async (req, res) => {
+    try{
+        const doc = await User.findById(req.user._id).populate('tasks');
+        res.send(doc.tasks)
+    }catch(error){
+        res.status(500).send()
+    }    
 });
 
 router.get('/tasks/:id', (req, res) => {
@@ -26,9 +36,9 @@ router.get('/tasks/:id', (req, res) => {
     });
 });
 
-router.post('/tasks', (req, res) => {
+router.post('/tasks', auth, (req, res) => {
     //console.log(req.body);
-    let task = new Task(req.body)
+    let task = new Task({...req.body, owner: req.user._id})
     task.save().then((result) => {
         res.send(result);
     }).catch((error) => {

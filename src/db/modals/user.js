@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema({
     }}]
 })
 
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({email})
     if(!user){
@@ -84,6 +90,9 @@ userSchema.pre('save', async function (next){
     //console.log('after save :', user)
     next()
 })
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 const User = mongoose.model('User', userSchema)
 

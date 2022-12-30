@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../db/modals/user');
 const router = new express.Router();
+const auth = require('../middleware/auth')
 
 router.get('/users', (req, res) => {
     //console.log(req.body)
@@ -11,7 +12,7 @@ router.get('/users', (req, res) => {
     });
 });
 
-router.get('/users/me', (req, res) => {
+router.get('/users/me', auth, (req, res) => {
     res.send(req.user)
 });
 
@@ -42,6 +43,7 @@ router.post('/users', async (req, res) => {
         res.status(400).send({ message: error.message });
     });
 });
+
 
 router.post('/users/login', async (req, res) => {
     try {
@@ -75,6 +77,18 @@ router.post('/users/logoutAll', async (req, res) => {
     }
 });
 
+router.delete('/users/me', auth, async (req, res) => {
+    //console.log(req.params)
+    try {
+        await req.user.remove();
+        res.send(req.user)
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+
+    }
+    return
+});
+
 router.delete('/users/:id', async (req, res) => {
     //console.log(req.params)
     try {
@@ -97,6 +111,32 @@ router.delete('/users/:id', async (req, res) => {
     return
 });
 
+router.patch('/users/me', async (req, res) => {
+    const allowedUpdates = ['name', 'password']
+    const isValidUpdate = Object.keys(req.body).every((update) => {
+        return allowedUpdates.includes(update)
+    })
+    if (!isValidUpdate) {
+        res.status(400).send({ error: 'Contains Invalid update key' })
+    } else {
+        try {
+            const user = req.user
+            
+            if (!user) {
+                res.status(404).send({ error: 'User not found!' });
+            } else {
+                allowedUpdates.forEach((key)=>{
+                    user[key] = req.body[key]
+                })
+                await user.save()
+                res.send(user)
+            }
+        } catch (error) {
+            res.status(500).send({ error: error.message })
+        }
+    }
+    return
+})
 
 router.patch('/users/:id', async (req, res) => {
     const allowedUpdates = ['name', 'password']

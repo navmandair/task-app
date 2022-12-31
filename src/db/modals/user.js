@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
+const Task = require('./task');
 
 const jwtAuthTokenSignKey = process.env.JWT_TOKEN_KEY || 'NodeJSCourse'
 
@@ -88,6 +89,13 @@ userSchema.pre('save', async function (next){
         user.password = await bcrypt.hash(user.password, 9) // should use variable
     }
     //console.log('after save :', user)
+    next()
+})
+
+userSchema.pre('remove', async function (next){
+    let user = this;
+    console.log(this)
+    await Task.deleteMany({owner: user._id})
     next()
 })
 

@@ -1,7 +1,23 @@
 const express = require('express');
 const User = require('../db/modals/user');
 const router = new express.Router();
-const auth = require('../middleware/auth')
+const auth = require('../middleware/auth');
+const multer = require('multer');
+const sharp = require('sharp');
+
+const avatar_uploader = multer({
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb){
+   
+        if(file.originalname.toLowerCase().endsWith('.jpg') || file.originalname.toLowerCase().endsWith('.jpeg') || file.originalname.toLowerCase().endsWith('.png')){
+            cb(undefined, true)
+        } else{
+            cb(new Error('Invalid file type, Only Support .jpg, .jpeg or .png'))
+        }
+    }
+});
 
 router.get('/users', (req, res) => {
     //console.log(req.body)
@@ -42,6 +58,46 @@ router.post('/users', async (req, res) => {
     }).catch((error) => {
         res.status(400).send({ message: error.message });
     });
+});
+
+
+router.post('/users/me/avatar', auth, avatar_uploader.single('avatar'), async (req, res) => {
+    //console.log(req.body);
+    const buffer = await sharp(req.file.buffer).resize({width: 250, height: 250}).png().toBuffer()
+    let user = req.user;
+    user.avatar = buffer;
+    user.save().then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        res.status(400).send({ message: error.message });
+    });
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message})
+});
+
+router.delete('/users/me/avatar', auth, async (req, res) => {
+    //console.log(req.body);
+    let user = req.user;
+    user.avatar = null;
+    user.save().then((result) => {
+        res.status(200).send();
+    }).catch((error) => {
+        res.status(400).send({ message: error.message });
+    });
+});
+
+router.get('/users/:id/avatar', async (req, res) => {
+    try{
+        let user = await User.findById(req.params.id)
+        if(!user || !user.avatar){
+            throw new Error('Avatar missing!')
+        }
+        res.set('Content-Type', 'image/png');
+        res.status(200).send(user.avatar);
+    } catch(error){
+        res.status(400).send({error: error.message});
+    }
+    return 
 });
 
 

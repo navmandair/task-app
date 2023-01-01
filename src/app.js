@@ -1,7 +1,7 @@
 const db = require('./db/mongoose');
 const express = require('express');
 const app = express();
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 const result = dotenv.config()
 if (result.error) {
     throw result.error
@@ -16,7 +16,7 @@ const maintenanceMode = process.env.MAINTENANCE_MODE || true;
 
 const auth = require('./middleware/auth');
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
     if(maintenanceMode === true){
         res.status(503).send({message: 'Site Under Maintenance'})
     }else if(req.path === '/users/login' || req.method === 'POST' && req.path === '/users'){
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
     }else {
         auth(req, res, next)
     }
-});
+});*/
 app.use(express.json());
 app.use(usersRouter);
 app.use(tasksRouter);

@@ -12,19 +12,6 @@ if (result.error) {
 const usersRouter = require('./routers/users');
 const tasksRouter = require('./routers/tasks');
 
-const maintenanceMode = process.env.MAINTENANCE_MODE || true;
-
-const auth = require('./middleware/auth');
-
-/*app.use((req, res, next) => {
-    if(maintenanceMode === true){
-        res.status(503).send({message: 'Site Under Maintenance'})
-    }else if(req.path === '/users/login' || req.method === 'POST' && req.path === '/users'){
-        next()
-    }else {
-        auth(req, res, next)
-    }
-});*/
 app.use(express.json());
 app.use(usersRouter);
 app.use(tasksRouter);

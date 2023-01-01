@@ -4,6 +4,7 @@ const router = new express.Router();
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const sharp = require('sharp');
+const { sendEmail } = require('../email');
 
 const avatar_uploader = multer({
     limits: {
@@ -51,9 +52,11 @@ router.get('/users/:id', (req, res) => {
 router.post('/users', async (req, res) => {
     //console.log(req.body);
     let user = new User(req.body)
+    user.verificationCode = (Math.random() + 1).toString(36).substring(6);
     user.save().then((result) => {
         return result.generateAuthToken()
     }).then((token) => {
+        sendEmail(user.email, 'Verify Account', `Hi ${user.name},\nWelcome to the To Do App, Your verification code is ${user.verificationCode}`)
         res.status(201).send({user, token});
     }).catch((error) => {
         res.status(400).send({ message: error.message });
@@ -137,6 +140,7 @@ router.delete('/users/me', auth, async (req, res) => {
     //console.log(req.params)
     try {
         await req.user.remove();
+        sendEmail(req.user.email, 'Account Deleted', `Hi ${req.user.name},\nSorry to see you go.`)
         res.send(req.user)
     } catch (error) {
         res.status(500).send({ error: error.message });
@@ -220,5 +224,24 @@ router.patch('/users/:id', async (req, res) => {
     }
     return
 })
+
+
+router.get('/users/me/verify', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+        if (req.query.code !== user.verificationCode) {
+            res.status(404).send({ error: 'Invalid Code!' });
+        } else {
+            user.verified = true;
+            await user.save()
+            res.send(user)
+        }
+    } catch (error) {
+        res.status(500).send({ error: error.message })
+    }
+    return
+})
+
+
 
 module.exports = router;

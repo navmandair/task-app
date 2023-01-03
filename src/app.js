@@ -1,11 +1,11 @@
 const db = require('./db/mongoose');
 const express = require('express');
 const app = express();
-const dotenv = require('dotenv');
+/*const dotenv = require('dotenv');
 const result = dotenv.config()
 if (result.error) {
     throw result.error
-}
+}*/
 
 // You will find some handlers done in diffrent way, 
 // that is intentional to display implementations diffrent ways to for same end goal

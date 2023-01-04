@@ -1,11 +1,4 @@
 const mongoose = require('mongoose');
-/*
-const dotenv = require('dotenv')
-const result = dotenv.config()
-if (result.error) {
-  throw result.error
-}
-*/
 const uri = process.env['DB_URL']
 const dbName = process.env['DB_NAME']
 

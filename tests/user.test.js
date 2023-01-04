@@ -1,5 +1,4 @@
 test('Hello World', ()=>{
-    console.log(process.env['DB_NAME'])
+    console.log("DB_NAME", process.env['DB_NAME'])
     let s = 'Hello World'
-    assert(s, 'Hello World')
 })

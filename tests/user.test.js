@@ -27,7 +27,12 @@ test('Can connect to server', async ()=>{
 })
 
 test('Can post a user', async ()=>{
-    await request(app).post('/users').send(testUser1).expect(201);
+    const result = await request(app).post('/users').send(testUser1).expect(201);
+    const user = await User.findById(result.body.user._id)
+    expect(result.body.user.name).toBe(user.name)
+    expect(result.body.user.password).toBeUndefined()
+    expect(user.password).not.toBe(result.body.user.password)
+    expect(user.password).not.toBeNull()
 })
 
 test('User cannot login with bad credentials', async ()=>{
@@ -54,11 +59,16 @@ test('Get User Profile when authenticated', async ()=>{
     await request(app).get('/users/me').set('Authorization', `Bearer ${testUser1.token}`).send().expect(200);
 })
 
-test('Delete User Profile when not authenticated', async ()=>{
+test('Cannot Delete User Profile when not authenticated', async ()=>{
     await request(app).delete('/users/me').send().expect(401);
+    const user = await User.findOne({ token: testUser1.token})
+    expect(user).not.toBeNull()
 })
 
 test('Delete User Profile when authenticated', async ()=>{
     await request(app).delete('/users/me').set('Authorization', `Bearer ${testUser1.token}`).send().expect(200);
+    const user = await User.findOne({ token: testUser1.token})
+    expect(user).toBeNull()
+    
 })
 

@@ -6,11 +6,14 @@
   "scripts": {
     "start": "node -r dotenv/config src/app.js dotenv_config_path=config/prod.env dotenv_config_debug=true",
     "dev": "nodemon -r dotenv/config src/app.js dotenv_config_path=config/dev.env dotenv_config_debug=true",
-    "test": "jest"
+    "test": "jest --detectOpenHandles"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/tests/config.js"],
-    "verbose": true
+    "setupFiles": [
+      "<rootDir>/tests/config.js"
+    ],
+    "verbose": true,
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "Nav Mandair",
@@ -25,6 +28,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.8.0",
     "sharp": "^0.31.3",
+    "supertest": "^6.3.3",
     "validator": "^13.7.0"
   },
   "devDependencies": {

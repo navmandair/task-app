@@ -171,7 +171,7 @@ router.delete('/users/:id', async (req, res) => {
     return
 });
 
-router.patch('/users/me', async (req, res) => {
+router.patch('/users/me', auth, async (req, res) => {
     const allowedUpdates = ['name', 'password']
     const isValidUpdate = Object.keys(req.body).every((update) => {
         return allowedUpdates.includes(update)
@@ -180,13 +180,15 @@ router.patch('/users/me', async (req, res) => {
         res.status(400).send({ error: 'Contains Invalid update key' })
     } else {
         try {
-            const user = req.user
-            
+            const user = await User.findById(req.user._id)
             if (!user) {
                 res.status(404).send({ error: 'User not found!' });
             } else {
                 allowedUpdates.forEach((key)=>{
-                    user[key] = req.body[key]
+                    if(req.body[key])
+                    {
+                        user[key] = req.body[key]
+                    }
                 })
                 await user.save()
                 res.send(user)
@@ -213,7 +215,10 @@ router.patch('/users/:id', async (req, res) => {
                 res.status(404).send({ error: 'User not found!' });
             } else {
                 allowedUpdates.forEach((key)=>{
-                    user[key] = req.body[key]
+                    if(req.body[key])
+                    {
+                        user[key] = req.body[key]
+                    }
                 })
                 await user.save()
                 res.send(user)

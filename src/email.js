@@ -14,9 +14,8 @@ let transporter = nodemailer.createTransport({
         pass: smtpPassword
     }
 })
- 
+console.log('transporter: ', transporter)
 const connect = () => transporter.verify().then(() => {console.log('Connected to SMTP server')}).catch((error) => {console.log('SMTP Failed to connect:', error)});
-
 
 const sendEmail = (toEmail, emailSubject, emailBody) => {
     message = {
@@ -25,6 +24,7 @@ const sendEmail = (toEmail, emailSubject, emailBody) => {
         subject: emailSubject,
         text: emailBody
     }
+
     transporter.sendMail(message, function (err, info) {
         if (err) {
             console.log('SMTP Error', err.message)

@@ -12,13 +12,13 @@ test('Database is test db', async () => {
         throw new Error('Database is not a test db')
     }
 })
-/*
+
 test('Create a new Task', async () => {
     const result = await request(app)
     .post('/tasks')
-    .set('Authorization', `Bearer ${testUser.token}`)
+    .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
     .send({description: 'clean the car'})
     .expect(201);
     const task = await Task.findById(result.body._id)
     expect(result.body.description).toBe(task.description)
-})*/
+})

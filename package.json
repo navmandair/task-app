@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node -r dotenv/config src/app.js dotenv_config_path=config/prod.env dotenv_config_debug=true",
     "dev": "nodemon -r dotenv/config src/app.js dotenv_config_path=config/dev.env dotenv_config_debug=true",
-    "test": "jest"
+    "test": "jest --runInBand"
   },
   "jest": {
     "setupFiles": [

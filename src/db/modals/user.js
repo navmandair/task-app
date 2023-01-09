@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const Task = require('./task');
 
-const jwtAuthTokenSignKey = process.env.JWT_TOKEN_KEY || 'NodeJSCourse'
+const jwtAuthTokenSignKey = process.env.JWT_TOKEN_KEY
 
 const userSchema = new mongoose.Schema({
     name: {

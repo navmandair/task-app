@@ -19,11 +19,11 @@ app.use(tasksRouter);
 const PORT = process.env.PORT || 3000;
 
 const startServer = (port = PORT) => { app.listen(port, () => { console.log(`Express server started on Port ${port}`) }) };
-
+/*
 app.get('', (req, res) => {
     res.send({message: 'Connected to the server'});
 });
-
+*/
 module.exports = {
     app,
     startServer

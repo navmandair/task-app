@@ -61,7 +61,7 @@ router.post('/tasks', auth, (req, res) => {
     //console.log(req.body);
     let task = new Task({...req.body, owner: req.user._id})
     task.save().then((result) => {
-        res.send(result);
+        res.status(201).send(result);
     }).catch((error) => {
         res.status(400).send({ message: error.message });
     });
